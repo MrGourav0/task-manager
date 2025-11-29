@@ -7,15 +7,29 @@ function App() {
 
   const handleAddTask = () => {
     const trimmed = title.trim();
-    if (!trimmed) return; // empty mat add kar
+    if (!trimmed) return;
 
     const newTask = {
       id: Date.now(),
       title: trimmed,
+      status: "pending", // NEW
     };
 
     setTasks((prev) => [...prev, newTask]);
     setTitle("");
+  };
+
+  const handleToggleStatus = (id) => {
+    setTasks((prev) =>
+      prev.map((task) =>
+        task.id === id
+          ? {
+              ...task,
+              status: task.status === "pending" ? "done" : "pending",
+            }
+          : task
+      )
+    );
   };
 
   return (
@@ -39,7 +53,6 @@ function App() {
           </button>
         </div>
 
-        {/* Filters abhi sirf UI, logic nahi */}
         <div className="filters-row">
           <button className="chip active">All</button>
           <button className="chip">Done</button>
@@ -54,7 +67,21 @@ function App() {
           ) : (
             tasks.map((task) => (
               <li key={task.id} className="task-item">
-                <span>{task.title}</span>
+                <span
+                  style={{
+                    textDecoration:
+                      task.status === "done" ? "line-through" : "none",
+                    color: task.status === "done" ? "#9ca3af" : "#111827",
+                  }}
+                >
+                  {task.title}
+                </span>
+                <button
+                  className="chip"
+                  onClick={() => handleToggleStatus(task.id)}
+                >
+                  {task.status === "pending" ? "Mark Done" : "Mark Pending"}
+                </button>
               </li>
             ))
           )}
