@@ -1,9 +1,16 @@
 import { useState } from "react";
 import "./App.css";
 
+const FILTERS = {
+  all: "ALL",
+  done: "DONE",
+  pending: "PENDING",
+};
+
 function App() {
   const [title, setTitle] = useState("");
   const [tasks, setTasks] = useState([]);
+  const [filter, setFilter] = useState(FILTERS.all);
 
   const handleAddTask = () => {
     const trimmed = title.trim();
@@ -36,6 +43,18 @@ function App() {
     setTasks((prev) => prev.filter((task) => task.id !== id));
   };
 
+  const getFilteredTasks = () => {
+    if (filter === FILTERS.done) {
+      return tasks.filter((t) => t.status === "done");
+    }
+    if (filter === FILTERS.pending) {
+      return tasks.filter((t) => t.status === "pending");
+    }
+    return tasks; // all
+  };
+
+  const visibleTasks = getFilteredTasks();
+
   return (
     <div className="app">
       <div className="card">
@@ -58,18 +77,39 @@ function App() {
         </div>
 
         <div className="filters-row">
-          <button className="chip active">All</button>
-          <button className="chip">Done</button>
-          <button className="chip">Pending</button>
+          <button
+            className={`chip ${
+              filter === FILTERS.all ? "active" : ""
+            }`}
+            onClick={() => setFilter(FILTERS.all)}
+          >
+            All
+          </button>
+          <button
+            className={`chip ${
+              filter === FILTERS.done ? "active" : ""
+            }`}
+            onClick={() => setFilter(FILTERS.done)}
+          >
+            Done
+          </button>
+          <button
+            className={`chip ${
+              filter === FILTERS.pending ? "active" : ""
+            }`}
+            onClick={() => setFilter(FILTERS.pending)}
+          >
+            Pending
+          </button>
         </div>
 
         <ul className="task-list">
-          {tasks.length === 0 ? (
+          {visibleTasks.length === 0 ? (
             <li className="task-item empty-text">
-              No tasks yet. Add your first task!
+              No tasks in this view.
             </li>
           ) : (
-            tasks.map((task) => (
+            visibleTasks.map((task) => (
               <li key={task.id} className="task-item">
                 <span
                   style={{
