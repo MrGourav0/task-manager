@@ -12,7 +12,7 @@ function App() {
     const newTask = {
       id: Date.now(),
       title: trimmed,
-      status: "pending", // NEW
+      status: "pending",
     };
 
     setTasks((prev) => [...prev, newTask]);
@@ -30,6 +30,10 @@ function App() {
           : task
       )
     );
+  };
+
+  const handleDeleteTask = (id) => {
+    setTasks((prev) => prev.filter((task) => task.id !== id));
   };
 
   return (
@@ -76,12 +80,22 @@ function App() {
                 >
                   {task.title}
                 </span>
-                <button
-                  className="chip"
-                  onClick={() => handleToggleStatus(task.id)}
-                >
-                  {task.status === "pending" ? "Mark Done" : "Mark Pending"}
-                </button>
+
+                <div style={{ display: "flex", gap: "0.4rem" }}>
+                  <button
+                    className="chip"
+                    onClick={() => handleToggleStatus(task.id)}
+                  >
+                    {task.status === "pending" ? "Mark Done" : "Mark Pending"}
+                  </button>
+
+                  <button
+                    className="chip"
+                    onClick={() => handleDeleteTask(task.id)}
+                  >
+                    Delete
+                  </button>
+                </div>
               </li>
             ))
           )}
