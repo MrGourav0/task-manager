@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 
 const FILTERS = {
@@ -11,6 +11,23 @@ function App() {
   const [title, setTitle] = useState("");
   const [tasks, setTasks] = useState([]);
   const [filter, setFilter] = useState(FILTERS.all);
+
+  // 1) Load from localStorage on first render
+  useEffect(() => {
+    const saved = localStorage.getItem("tasks");
+    if (saved) {
+      try {
+        setTasks(JSON.parse(saved));
+      } catch (err) {
+        console.error("Failed to parse saved tasks", err);
+      }
+    }
+  }, []);
+
+  // 2) Save to localStorage whenever tasks change
+  useEffect(() => {
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  }, [tasks]);
 
   const handleAddTask = () => {
     const trimmed = title.trim();
@@ -50,7 +67,7 @@ function App() {
     if (filter === FILTERS.pending) {
       return tasks.filter((t) => t.status === "pending");
     }
-    return tasks; // all
+    return tasks;
   };
 
   const visibleTasks = getFilteredTasks();
